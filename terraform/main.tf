@@ -12,6 +12,7 @@ terraform {
 provider "aws" {
   region = var.aws_region
 }
+#tfsec:ignore:aws-s3-enable-bucket-logging
 resource "aws_s3_bucket" "example" {
   bucket = "hms-cicd-demo-bucket-123456"
 
@@ -46,4 +47,20 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example_encryptio
     }
   }
 }
+resource "aws_kms_key" "s3_key" {
+  description             = "KMS key for S3 bucket encryption"
+  deletion_window_in_days = 10
+  enable_key_rotation     = true
+}
+resource "aws_s3_bucket_server_side_encryption_configuration" "example_encryption" {
+  bucket = aws_s3_bucket.example.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.s3_key.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
+
 #tfsec:ignore:aws-s3-encryption-customer-key
