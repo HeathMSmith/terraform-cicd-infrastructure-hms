@@ -7,12 +7,6 @@ terraform {
       version = "~> 5.0"
     }
   }
-
-  backend "s3" {
-    bucket = "hms-terraform-state-bucket-82771"
-    key    = "cicd/terraform.tfstate"
-    region = "us-east-1"
-  }
 }
 
 provider "aws" {
