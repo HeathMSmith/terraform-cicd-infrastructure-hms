@@ -37,7 +37,11 @@ resource "aws_s3_bucket_versioning" "example_versioning" {
     status = "Enabled"
   }
 }
-
+resource "aws_kms_key" "s3_bucket_key" {
+  description             = "KMS key for S3 bucket encryption"
+  deletion_window_in_days = 10
+  enable_key_rotation     = true
+}
 resource "aws_s3_bucket_server_side_encryption_configuration" "example_encryption" {
   bucket = aws_s3_bucket.example.id
 
